@@ -105,7 +105,7 @@ pixelsY = 540 #135 270 540 1080 2160 4320 8640
 Xeval = X_intv[1] : (X_intv[2] - X_intv[1]) / (pixelsX - 1) : X_intv[2]
 Yeval = Y_intv[1] : (Y_intv[2] - Y_intv[1]) / (pixelsY - 1) : Y_intv[2]
 
-anim = @animate for max_iteration = 3:3
+anim = @animate for max_iteration = 3:33
     println("Iteracion: ", max_iteration)
 
     Mandelbrot_img = zeros(RGB{Float64}, (pixelsY, pixelsX));
