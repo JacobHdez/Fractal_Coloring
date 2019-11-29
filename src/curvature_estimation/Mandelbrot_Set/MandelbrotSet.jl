@@ -1,5 +1,5 @@
 using Pkg
-pkg"activate ..\\.."
+pkg"activate ..\\..\\.."
 
 using SymPy
 using Plots
