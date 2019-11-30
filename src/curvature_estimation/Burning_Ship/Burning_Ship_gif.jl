@@ -100,8 +100,6 @@ end
 #=
 Generating fractal image
 =#
-max_iteration = 32
-
 X_intv = [-2.1, 1.4]
 Y_intv = [-2.0, 1.0]
 
@@ -110,51 +108,54 @@ X_intv = [-1.75, -0.5]
 Y_intv = [-0.5, 0.25]
 =#
 
-pixelsX = 960 #240 480 960 1920 3840 7680 15360
-pixelsY = 540 #135 270 540 1080 2160 4320 8640
+pixelsX = 240 #240 480 960 1920 3840 7680 15360
+pixelsY = 135 #135 270 540 1080 2160 4320 8640
 
 BurningShip_img = zeros(RGB{Float64}, (pixelsY, pixelsX));
 
 Xeval = X_intv[1] : (X_intv[2] - X_intv[1]) / (pixelsX - 1) : X_intv[2]
 Yeval = Y_intv[1] : (Y_intv[2] - Y_intv[1]) / (pixelsY - 1) : Y_intv[2]
 
-i = 1
-for x = Xeval
-    global i
-    println(i)
-    j = 1
-    for y = Yeval
-        z = BigFloat(0)*im
-        c = BigFloat(x) + BigFloat(y)*im
-        n = 1
 
-        points = zeros(Complex{BigFloat}, max_iteration)
-        points[n] = z
+anim = @animate for max_iteration = 3:33
+    println("Iteracion: ", max_iteration)
 
-        while n < max_iteration
-            z = BurningShip(z, c)
-            if isnan(z) || isinf(z)
-                break
+    i = 1
+    for x = Xeval
+        j = 1
+        for y = Yeval
+            z = BigFloat(0)*im
+            c = BigFloat(x) + BigFloat(y)*im
+            n = 1
+
+            points = zeros(Complex{BigFloat}, max_iteration)
+            points[n] = z
+
+            while n < max_iteration
+                z = BurningShip(z, c)
+                if isnan(z) || isinf(z)
+                    break
+                end
+
+                n += 1
+                points[n] = z
             end
 
-            n += 1
-            points[n] = z
-        end
+            k = Float64(curvature_estimation(points[1:n]), RoundDown)
+            if isnan(k) || isinf(k)
+                println("[",i,",",j,"] ->", k)
+            elseif k < 0 || k > pi/2 + 0.09
+                println("[",i,",",j,"] OR->", k)
+            else
+                BurningShip_img[j, i] = RGB{Float64}(Red_int(k)/255, Green_int(k)/255, Blue_int(k)/255)
+            end
 
-        k = Float64(curvature_estimation(points[1:n]), RoundDown)
-        if isnan(k) || isinf(k)
-            println("[",i,",",j,"] ->", k)
-        elseif k < 0 || k > pi/2 + 0.09
-            println("[",i,",",j,"] OR->", k)
-        else
-            BurningShip_img[j, i] = RGB{Float64}(Red_int(k)/255, Green_int(k)/255, Blue_int(k)/255)
+            j += 1
         end
-
-        j += 1
+        i += 1
     end
-    i += 1
+
+    plot(BurningShip_img)
 end
 
-
-save(string("results\\Burning_Ship_", string(max_iteration), "_", string(pixelsX), "x", string(pixelsY), ".png"), BurningShip_img)
-plot(BurningShip_img)
+gif(anim, string("results\\Burning_Ship", string(pixelsX), "x", string(pixelsY), "_fps5.gif"), fps = 5)
