@@ -1,0 +1,128 @@
+\documentclass[11pt]{beamer}
+\usetheme[subsectionpage=progressbar,numbering=none,progressbar=frametitle,block=fill]{metropolis}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{dsfont}
+\usepackage{commath}
+\title{Estimación de curvatura para coloración de sistemas dinámicos en el plano complejo}
+\author{Jacobo Hernández Varela}
+\date{30 de noviembre de 2019}
+
+\newtheorem{defi1}{{Definición}{\it (Orbita)}}[section]
+\newtheorem{defi2}{{Definición}{\it (Orbita truncada)}}[section]
+\newtheorem{defi3}{{Definición}{\it (Función de Coloreado)}}[section]
+\newtheorem{defi4}{{Definición}{\it (Función paleta)}}[section]
+
+\begin{document}
+\maketitle
+
+\section{Conceptos Fundamentales}
+
+\subsection{Órbitas e Iteraciones}
+\begin{frame}{Órbitas e Iteraciones}
+	\begin{itemize}
+		\item La $n$-ésima composición de $f$ es denotado por $f^n(z)$. Esto es,
+	\[ f^n(z) = f(f(...f(z)...)) \]
+	donde $f$ es aplicado a $z$ $n$ veces.
+	
+		\item Aplicar la función a la previa composición es llamado iteración.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Órbitas e Iteraciones}
+	\begin{defi1}
+		Dada una función $f:\mathds{C}\to\mathds{C}$, la orbita de un punto $z\in\mathds{C}$ es el conjunto
+		\[ O(z) = \set{z, f(z), f^2(z), ...} \]
+	\end{defi1}
+\end{frame}
+
+\begin{frame}{Órbitas e Iteraciones}
+	\begin{itemize}
+		\item Cuando calculamos fractales en la computadora, nos interesa una representación finita de las orbitas. Esto es logrado limitando el maximo numero de elementos que contiene la orbita.
+		
+		\item Definamos dos contantes $M$ y $N_{max}$ como el \textit{valor de rescate} y \textit{el máximo numero de iteraciones} respectivamente.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Órbitas e Iteraciones}
+	\begin{defi2}
+		Sean
+		\[ O(z) = \set{z, f(z), f^2(z),...} \]
+		una orbita, y $M$ y $N_{max}$ constantes dadas. Sea $\overline{N}$ el entero no negativo mas pequeño tal que $\abs{f^{\overline{N}}(z)} > M$, y definimos $N = \min\set{\overline{N}, N_{max}}$.\\
+		La orbita truncada $O_T(z)$ es el conjunto 
+		\[ O_T(z) = \set{z, f(z), f^2(z),...,f^N(z)} \]
+	\end{defi2}
+\end{frame}
+
+\subsection{Fractales}
+\begin{frame}{Fractales}
+	\begin{itemize}
+		\item Consideremos una función \[ \fullfunction{f}{\mathds{C}}{\mathds{C}}{z}{z^p + c} \] donde la contante $p\in\mathds{N}$, $p\geq 2$ y la semilla $c'in\mathds{C}$.
+		
+		\item La función $f(z)$ define \textit{un sistema dinámico}
+		\[ z_k = z_{k-1}^{p} + c \]
+		
+		\item Dependiendo del valor de $c$ y el valor inicial $z_0$ las iteraciones se comportan de manera diferente.
+\end{itemize}		
+\end{frame}
+
+\subsection{Funciones de coloreado y paleta}
+\begin{frame}{Funciones de coloreado y paleta}
+	\begin{itemize}
+		\item Una \textit{imagen} es representada por una matriz de $m\times n$ por puntos discretos llamados \textit{pixeles}.
+		\item Cada pixel en la matriz es asociado a un color $RGB$.
+%		\item Sea $z_0$ el punto correspondiente a un pixel en el plano complejo.
+\item Para calcular el color de cada pixel en una imagen fractal, la órbita truncada $O_T(z)$ se calcula primero. Luego, la función de color es evaluada
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Funciones de coloreado y paleta}
+	\begin{defi3}
+		Una función de coloreado es una función
+		\[ u:\mathds{C}\to\mathds{R} \]
+	\end{defi3}
+	que mapea a la órbita truncada a los reales.
+\end{frame}
+
+\begin{frame}{Funciones de coloreado y paleta}
+	\begin{defi4}
+		Una función paleta $P:\mathds{R}\to\mathds{R}^3$ mapea el indice del color $I$ al espacio de color RGB. Su dominio es $[0,1]$ y el rango $[0,1]^3$.
+	\end{defi4}
+\end{frame}
+
+\section{Calculando Imagenes Fractales}
+\begin{frame}{Calculando Imagenes Fractales}
+\begin{enumerate}
+	\item Sea $z_0$ la posición correspondiente del pixel en el plano complejo.
+	\item Calcula la órbita truncada iterando la formula $z_n = f(z_{n-1})$ empezando en $z_0$ hasta que
+	\begin{itemize}
+		\item $\abs{z_n} > M$, o
+		\item $n = N_{max}$
+	\end{itemize}
+	
+	\item Usando las funciones de color e indice de color, mapea el resultado de la orbita truncada al valor del indice de color.
+	
+	\item Determina el color RGB del pixel usando la paleta de colores.
+\end{enumerate}
+
+Si $\abs{z_n} > M$, el pixel es un punto exterior. En otro caso, si $n = N_{max}$, el punto es un punto interior.
+
+\end{frame}
+
+\section{Estimación de Curvatura}
+\begin{frame}{Estimación de Curvatura}
+	\begin{itemize}
+		\item La estimación promedio de curvatura fue utilizado originalmente por Damien M. Jones para Ultra Fractal en 1999.
+		
+		\item El coloreado es basicamente aproximar la curvatura de una curva con putos discretos. 
+		\item En este caso, la curvatura esta definida por los puntos de la órbita truncada $O_T(z_0)$.
+		\item La aproximación usada es 
+		\[ t(Z_n) = \abs{ \arctan \del{\frac{z_n - z_{n-1}}{z_{n-1} - z_{n-2}}} } \]
+	\end{itemize}
+\end{frame}
+
+\end{document}
